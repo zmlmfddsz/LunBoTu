@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>淘宝轮播图</title>
+    <link rel="stylesheet" href="initialize.css"/>
+    <style>
+        .content {
+            width: 520px;
+            height: 280px;
+            margin: 100px auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .content:hover .direction {
+            display: block;
+        }
+
+        .inner {
+            width: 3640px;
+            position: absolute;
+        }
+
+        img {
+            width: 520px;
+            height: 280px;
+            float: left;
+        }
+
+        .direction {
+            width: 24px;
+            height: 36px;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.298039);
+            color: white;
+            line-height: 36px;
+            text-align: center;
+            bottom: 0;
+            top: 0;
+            margin: auto 0;
+            display: none;
+            font-size: 14px;
+        }
+
+        .direction:hover {
+            background-color: rgba(0, 0, 0, 0.341176);
+            cursor: pointer;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            right: 0;
+        }
+
+        .circle {
+            position: absolute;
+            width: 65px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            bottom: 15px;
+            background-color: rgba(255, 255, 255, .3);
+            border-radius: 10px;
+        }
+
+        .circle li {
+            float: left;
+            margin: 2px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: rgb(183, 183, 183);
+        }
+
+        .circle .red {
+            background: rgb(255, 68, 0);
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="inner clearFix" style="left: -520px">
+        <img src="img/5.jpg" alt=""/>
+        <img src="img/1.jpg" alt=""/>
+        <img src="img/2.jpg" alt=""/>
+        <img src="img/3.jpg" alt=""/>
+        <img src="img/4.jpg" alt=""/>
+        <img src="img/5.jpg" alt=""/>
+        <img src="img/1.jpg" alt=""/>
+
+    </div>
+    <div class="left direction">&lt;</div>
+    <div class="right direction">&gt;</div>
+    <ul class="circle clearFix">
+        <li class="red"></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+<script>
+    var content=document.getElementsByClassName("content").item(0);
+    var left = document.getElementsByClassName("left").item(0);
+    var right = document.getElementsByClassName("right").item(0);
+    var inner = document.getElementsByClassName("inner").item(0);
+    var lilist=document.getElementsByTagName("li");
+    var index=0;
+    var timer = null;
+    var timer1=null;
+    var flag = true; //true可以移动 false不可以移动
+    function move(dis) {
+        var time = 400;  //运动的总时间
+        var everyTime = 10;   //每次运动的时间
+        var every = dis / (time / everyTime);  //每次运动的距离
+        var newPosition = parseInt(inner.style.left) + dis;  //最终的位置
+        flag = false;
+
+//        方法一：用setInterval
+        function meici() {
+            if (every > 0 && parseInt(inner.style.left) < newPosition || every < 0 && parseInt(inner.style.left) > newPosition) {
+
+                inner.style.left = parseInt(inner.style.left) + every + "px";
+            } else {
+                inner.style.left = newPosition + "px";
+                clearInterval(timer);
+                flag = true;
+                if (newPosition == 0) {
+                    inner.style.left = "-2600px";
+                } else if (newPosition == -3120) {
+                    inner.style.left = "-520px";
+                }
+            }
+        }
+
+        timer = setInterval(meici, 10);
+
+//方法二：用递归函数
+//         function meici(){
+//             if(every>0&&parseInt(inner.style.left)<newPosition||every<0&&parseInt(inner.style.left)>newPosition){
+//                 inner.style.left=parseInt(inner.style.left)+every+"px";
+//                 setTimeout(meici,10);
+//             }else{
+//                 inner.style.left=newPosition+"px";
+//                 flag=true;
+//                if(newPosition==0){
+//                    inner.style.left="-2600px";
+//                }else if(newPosition==-3120){
+//                    inner.style.left="-520px";
+//                }
+//             }
+//         }
+//        meici();
+
+    }
+
+    right.onclick = function () {
+        if (flag) {
+            move(-520);
+            if(index==4){
+                index=0;
+            }else{
+                index++;
+            }
+            show()
+        }
+    };
+    left.onclick = function () {
+        if (flag) {
+            move(520);
+            if(index==0){
+                index=4;
+            }else{
+                index--;
+            }
+            show();
+        }
+    };
+
+    for(var i=0;i<lilist.length;i++){
+        lilist[i].value=i;
+        lilist[i].onclick=function(){
+            if(lilist.value==index) return;
+            var dis=(this.value-index)*-520;
+            move(dis);
+            index=this.value;
+            show();
+
+        }
+    }
+
+
+    function show(){
+        for(var i=0;i<lilist.length;i++){
+            if(lilist[i].className=="red"){
+                lilist[i].className="";
+                break;
+            }
+        }
+        lilist[index].className="red";
+    }
+
+
+    timer1=setInterval(right.onclick,2000);
+    content.onmouseover= function () {
+        clearInterval(timer1);
+    };
+    content.onmouseout= function () {
+        timer1=setInterval(right.onclick,2000);
+    }
+
+</script>
+</body>
+</html>
